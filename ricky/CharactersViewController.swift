@@ -22,9 +22,11 @@ class CharactersViewController: BaseViewController {
     @IBOutlet weak var lbCount: UILabel!
     @IBOutlet weak var lbPagination: UILabel!
     
+    var isLoading: Bool = false
     var page: Int = 1
     var pageNext: URL?
     var pagePrev: URL?
+    var pageCount = 0
     @IBOutlet weak var collectionView: UICollectionView!
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,26 +41,33 @@ class CharactersViewController: BaseViewController {
 extension CharactersViewController {
     
     func fetchCharacters(filterBy: String?) {
-        let url = Constants.K.ProductionServer.baseURL +  Constants.Endopint.characters.rawValue
-        var parameters: [String: String] = [:]
-        
-        if let filterBy = filterBy {
-            parameters["status"] = filterBy
-            parameters["page"] = self.page.formatted()
-        }
-        showSpinner()
-        AF.request(url, parameters: parameters).validate().responseDecodable(of: CharacatersDto.self) { [self] (response) in
-            hideSpinner()
-            guard let char = response.value else { return }
-            self.characters = char.results
-            self.characters.sorted(by: ({ $0.id
-                < $1.id }) )
-            self.collectionView.reloadData()
-            self.collectionView.layoutIfNeeded()
-            self.lbCount.text = "Total: \(char.info.count)"
-            self.lbPagination.text = "Pág \(self.page.formatted()) /\(char.info.pages.formatted())"
-            collectionView.isScrollEnabled = true
-
+        if !self.isLoading {
+            self.isLoading = true
+            let url = Constants.K.ProductionServer.baseURL +  Constants.Endopint.characters.rawValue
+            var parameters: [String: String] = [:]
+            
+            if let filterBy = filterBy {
+                parameters["status"] = filterBy
+                parameters["page"] = self.page.formatted()
+            }
+            showSpinner()
+            DispatchQueue.global().asyncAfter(deadline: .now() + .seconds(1)) {
+                AF.request(url, parameters: parameters).validate().responseDecodable(of: CharacatersDto.self) { [self] (response) in
+                    guard let char = response.value else { return }
+                    self.characters = char.results
+                    self.characters.sorted(by: ({ $0.id
+                        < $1.id }) )
+                    self.lbCount.text = "Total: \(char.info.count)"
+                    self.pageCount = char.info.pages
+                    self.lbPagination.text = "Pág \(self.page.formatted()) /\(char.info.pages.formatted())"
+                    DispatchQueue.main.async {
+                        self.collectionView.reloadData()
+                        self.isLoading = false
+                        self.collectionView.layoutIfNeeded()
+                        hideSpinner()
+                    }
+                }
+            }
         }
     }
 }
@@ -90,29 +99,6 @@ extension CharactersViewController : UICollectionViewDataSource{
         }
         cell.data =  self.characters[indexPath.row]
         cell.layoutIfNeeded()
-        
-        // 1
-    //    cell.activityIndicator.stopAnimating()
-        
-        // 2
-//        guard indexPath == largePhotoIndexPath else {
-//            cell.imageView.image = flickrPhoto.thumbnail
-//            return cell
-//        }
-        
-        // 3
-//        cell.isSelected = true
-//        guard flickrPhoto.largeImage == nil else {
-//            cell.imageView.image = flickrPhoto.largeImage
-//            return cell
-//        }
-        
-        // 4
-     //   cell.imageView.image = flickrPhoto.thumbnail
-        
-        // 5
-     //   performLargeImageFetch(for: indexPath, flickrPhoto: flickrPhoto, cell: cell)
-        
         return cell
     }
 }
@@ -123,15 +109,16 @@ extension CharactersViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        
+        guard !isLoading else {
+            return CGSize.zero
+        }
         let paddingSpace = RickyConstants.sectionInsets.left * (RickyConstants.itemsPerRow + 1)
         let paddingSpaceH = RickyConstants.sectionInsets.top * (RickyConstants.itemsPerRow + 1)
         let availableWidth = collectionView.frame.width - paddingSpace
         let widthPerItem = availableWidth / RickyConstants.itemsPerRow
         let availableHeight = collectionView.frame.height - paddingSpaceH
         let heightPerItem = availableHeight / ( 20 / RickyConstants.itemsPerRow )
-        
-        
+
         return CGSize(width: widthPerItem, height: heightPerItem)
     }
     
@@ -151,25 +138,9 @@ extension CharactersViewController: UICollectionViewDelegateFlowLayout {
         return RickyConstants.sectionInsets.left
     }
     
-    
-     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-         let offsetY = scrollView.contentOffset.y
-         let contentHeight = scrollView.contentSize.height
-         
-         if offsetY >= contentHeight - scrollView.frame.size.height {
-             scrollView.isScrollEnabled = false
-             if (tabBar.selectedItem?.tag == 1) {
-                 page += 1
-                 fetchCharacters(filterBy: "alive")
-                 scrollView.scrollsToTop
-             }
-         }
-    }
-}
 
-extension CharactersViewController: UITabBarDelegate {
-    func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
-        switch item.tag {
+    fileprivate func fetchByFiltred() {
+        switch tabBar.selectedItem?.tag {
             case 1:
                 fetchCharacters(filterBy: "alive")
                 break
@@ -182,5 +153,27 @@ extension CharactersViewController: UITabBarDelegate {
             default:
                 fetchCharacters(filterBy: nil)
         }
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+         let offsetY = scrollView.contentOffset.y
+         let contentHeight = scrollView.contentSize.height
+         
+         if offsetY > contentHeight - scrollView.frame.size.height {
+             guard page <= pageCount, !isLoading else { return }
+             page += 1
+         } else if offsetY < 0 {
+             guard page > 1, !isLoading else { return }
+             page -= 1
+         }
+        
+        fetchByFiltred()
+    }
+}
+
+extension CharactersViewController: UITabBarDelegate {
+    func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
+        page = 1
+        fetchByFiltred()
     }
 }
