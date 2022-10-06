@@ -101,6 +101,11 @@ extension CharactersViewController : UICollectionViewDataSource{
         cell.layoutIfNeeded()
         return cell
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let vc = segue.destination as? CharacterViewController else {return}
+        vc.character_ = sender as? Character
+     }
 }
 
 extension CharactersViewController: UICollectionViewDelegateFlowLayout {
@@ -169,6 +174,10 @@ extension CharactersViewController: UICollectionViewDelegateFlowLayout {
         
         fetchByFiltred()
     }
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "showCharacterDetail", sender:  self.characters[indexPath.row])
+    }
+    
 }
 
 extension CharactersViewController: UITabBarDelegate {
@@ -177,3 +186,4 @@ extension CharactersViewController: UITabBarDelegate {
         fetchByFiltred()
     }
 }
+

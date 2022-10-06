@@ -33,9 +33,7 @@ enum ContentType: String {
 
 enum Endopint: String {
     case characters = "/character"
- //   case charactersLives = "/character/?=alive"
- //   case charactersDead = "/character/?=dead"
-  //  case charactersUnknown = "/character/?=unknown"
+    case episodes = "/episode"
 }
 
     

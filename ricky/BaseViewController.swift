@@ -16,16 +16,22 @@ class BaseViewController: UIViewController {
     }
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
 
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
     func showSpinner() {
         activityIndicator.startAnimating()
         loadingView.isHidden = false
-
     }
     
     func hideSpinner() {
         activityIndicator.stopAnimating()
         loadingView.isHidden = true
-
     }
 
 

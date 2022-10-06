@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		9B2E6A7E28EE07D200769770 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2E6A7D28EE07D200769770 /* BaseViewController.swift */; };
+		9B2E6A8028EE1A8600769770 /* CharacterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2E6A7F28EE1A8500769770 /* CharacterViewController.swift */; };
 		9B33619228EB5719007CC8A3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B33619128EB5719007CC8A3 /* AppDelegate.swift */; };
 		9B33619428EB5719007CC8A3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B33619328EB5719007CC8A3 /* SceneDelegate.swift */; };
 		9B33619628EB5719007CC8A3 /* CharactersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B33619528EB5719007CC8A3 /* CharactersViewController.swift */; };
@@ -24,6 +25,7 @@
 
 /* Begin PBXFileReference section */
 		9B2E6A7D28EE07D200769770 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
+		9B2E6A7F28EE1A8500769770 /* CharacterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterViewController.swift; sourceTree = "<group>"; };
 		9B33618E28EB5719007CC8A3 /* ricky.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ricky.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9B33619128EB5719007CC8A3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9B33619328EB5719007CC8A3 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 				9B3361A828EB5ED3007CC8A3 /* CharactersDto.swift */,
 				9B3361AE28EB6858007CC8A3 /* Constants.swift */,
 				9B2E6A7D28EE07D200769770 /* BaseViewController.swift */,
+				9B2E6A7F28EE1A8500769770 /* CharacterViewController.swift */,
 			);
 			path = ricky;
 			sourceTree = "<group>";
@@ -173,6 +176,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9B2E6A8028EE1A8600769770 /* CharacterViewController.swift in Sources */,
 				9B33619628EB5719007CC8A3 /* CharactersViewController.swift in Sources */,
 				9B3361B828EB8007007CC8A3 /* CharactersHeaderView.swift in Sources */,
 				9B3361A928EB5ED3007CC8A3 /* CharactersDto.swift in Sources */,
